@@ -8,7 +8,7 @@ locals {
 
   azs = ["us-east-1a", "us-east-1b"]
 
-  allowed_cidrs = ["102.190.51.30/32"]
+  allowed_cidrs = ["0.0.0.0/0"]
   key_name      = "Ivolve-proj"
   ecr_repo_name = "ivolve-app"
 
