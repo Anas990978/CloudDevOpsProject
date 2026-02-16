@@ -11,9 +11,7 @@ pipeline {
     AWS_REGION = 'us-east-1'
     AWS_CREDS  = 'aws-creds'          // Jenkins credentials ID (AWS Credentials)
 
-    ACCOUNT_ID = '637423620989'
-    ECR_REPO   = 'ivolve-app'
-    ECR_URI    = "$637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app"
+    ECR_URI    = "637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app"
 
     IMAGE_TAG  = "${BUILD_NUMBER}"
 
