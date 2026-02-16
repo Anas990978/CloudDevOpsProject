@@ -25,20 +25,20 @@ pipeline {
 
     stage('Build Image') {
       steps {
-        dockerBuild(WORK_DIR, ECR_URI, IMAGE_TAG)
+        buildImage(WORK_DIR, ECR_URI, IMAGE_TAG)
       }
     }
 
     stage('Security Scan') {
       steps {
-        trivyImageScan(ECR_URI, IMAGE_TAG)
+        scanImage(ECR_URI, IMAGE_TAG)
       }
     }
 
     stage('Push Image') {
       steps {
         // If you use IAM role on Jenkins EC2, call ecrPushImage without creds
-        ecrPushImage(ECR_URI, IMAGE_TAG, AWS_REGION, AWS_CREDS)
+        pushImage(ECR_URI, IMAGE_TAG, AWS_REGION, AWS_CREDS)
       }
     }
 
@@ -50,7 +50,7 @@ pipeline {
 
     stage('Update K8s Manifest (GitOps)') {
       steps {
-        updateAndPushManifest(
+        updateDeploymentManifist(
           DEPLOYMENT_FILE,
           CONTAINER_NAME,
           "${ECR_URI}:${IMAGE_TAG}",
