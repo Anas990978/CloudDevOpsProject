@@ -1,11 +1,42 @@
 - name: Update apt cache
+  become: true
   apt:
     update_cache: yes
 
 - name: Install required packages
+  become: true
   apt:
     name:
       - git
       - curl
       - unzip
+      - ca-certificates
     state: present
+
+# ---- AWS CLI INSTALLATION ----
+
+- name: Check if AWS CLI exists
+  command: aws --version
+  register: aws_check
+  failed_when: false
+  changed_when: false
+
+- name: Download AWS CLI v2
+  become: true
+  get_url:
+    url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp/awscliv2.zip
+  when: aws_check.rc != 0
+
+- name: Unzip AWS CLI
+  become: true
+  unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    remote_src: yes
+  when: aws_check.rc != 0
+
+- name: Install AWS CLI
+  become: true
+  command: /tmp/aws/install --update
+  when: aws_check.rc != 0
