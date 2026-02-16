@@ -4,28 +4,39 @@ pipeline {
   agent any
 
   environment {
-    // App location
+    // App folder (where Dockerfile context is)
     WORK_DIR = 'App'
 
     // AWS/ECR
     AWS_REGION = 'us-east-1'
-    AWS_CREDS  = 'aws-creds'          // Jenkins credentials ID (AWS Credentials)
-
-    ECR_URI    = "637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app"
-
+    AWS_CREDS  = 'aws-creds'  // AWS Credentials 
+    ECR_URI    = '637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app'
     IMAGE_TAG  = "${BUILD_NUMBER}"
 
     // GitOps
     DEPLOYMENT_FILE = 'k8s/deployment.yaml'
-    CONTAINER_NAME  = 'flask-app'
-    GIT_TOKEN_ID    = 'GitHub'  // Jenkins Secret text
+    GIT_TOKEN_ID    = 'GitHub'     
+    TARGET_BRANCH   = 'main'       
+  }
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
   }
 
   stages {
 
+    stage('Checkout SCM') {
+      steps {
+        checkout scm
+      }
+    }
+
     stage('Build Image') {
       steps {
-        buildImage(WORK_DIR, ECR_URI, IMAGE_TAG)
+        dir("${WORK_DIR}") {
+          buildImage(WORK_DIR, ECR_URI, IMAGE_TAG)
+        }
       }
     }
 
@@ -37,7 +48,6 @@ pipeline {
 
     stage('Push Image') {
       steps {
-        // If you use IAM role on Jenkins EC2, call ecrPushImage without creds
         pushImage(ECR_URI, IMAGE_TAG, AWS_REGION, AWS_CREDS)
       }
     }
@@ -50,13 +60,15 @@ pipeline {
 
     stage('Update K8s Manifest (GitOps)') {
       steps {
-        updateDeploymentManifist(
-          DEPLOYMENT_FILE,
-          CONTAINER_NAME,
-          "${ECR_URI}:${IMAGE_TAG}",
-          GIT_TOKEN_ID,
-          "chore(gitops): update image to ${IMAGE_TAG} [skip ci]"
-        )
+        script {
+          
+          updateDeploymentManifist(
+            ECR_URI.toString(),
+            IMAGE_TAG.toString(),
+            DEPLOYMENT_FILE.toString(),
+            GIT_TOKEN_ID.toString()
+          )
+        }
       }
     }
   }
@@ -64,6 +76,6 @@ pipeline {
   post {
     success { echo 'Pipeline completed successfully' }
     failure { echo 'Pipeline failed' }
-    always  { sh 'docker logout || true' }
+    always  { sh "docker logout ${ECR_URI.split('/')[0]} || true" }
   }
 }
