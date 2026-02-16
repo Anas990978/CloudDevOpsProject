@@ -1,4 +1,39 @@
 ---
+# tasks file for roles/jenkins
+
+# Install Java 17 FIRST - Jenkins requires Java to run
+- name: Install Java 17
+  apt:
+    name: openjdk-17-jdk
+    state: present
+    update_cache: yes
+
+# Verify Java installation
+- name: Verify Java installation
+  command: java -version
+  register: java_version
+  changed_when: false
+
+- name: Display Java version
+  debug:
+    msg: "{{ java_version.stderr_lines }}"
+
+# Get Java home path
+- name: Get Java home path
+  shell: update-alternatives --query java | grep 'Value:' | awk '{print $2}' | sed 's|/bin/java||'
+  register: java_home_path
+  changed_when: false
+
+# Set JAVA_HOME for Jenkins
+- name: Set JAVA_HOME in Jenkins default config
+  lineinfile:
+    path: /etc/default/jenkins
+    regexp: '^JAVA_HOME='
+    line: "JAVA_HOME={{ java_home_path.stdout }}"
+    create: yes
+    mode: '0644'
+
+# Jenkins runs on Java → Java requires font libraries even in headless mode.
 - name: Install prerequisites
   apt:
     name:
@@ -20,7 +55,9 @@
     dest: /etc/apt/keyrings/jenkins-keyring.asc
     mode: '0644'
 
-#
+# Adds Jenkins repository to apt sources.
+# Jenkins is NOT in default Ubuntu repo. You must add official repo.
+# The signed-by= ensures it uses the correct GPG key. 
 - name: Add Jenkins stable repository with signed-by
   copy:
     content: |
@@ -46,6 +83,11 @@
     groups: docker
     append: yes
 
+# Reload systemd to pick up any changes
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
 # Starts Jenkins immediately. Enables it at boot
 - name: Start and enable Jenkins service
   systemd:
@@ -60,7 +102,7 @@
     delay: 30
     timeout: 300
 
-#Reads the initial unlock password. Jenkins requires this on first login.
+# Reads the initial unlock password. Jenkins requires this on first login.
 - name: Get initial admin password
   command: cat /var/lib/jenkins/secrets/initialAdminPassword
   register: initial_password

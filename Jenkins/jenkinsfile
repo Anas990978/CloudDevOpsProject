@@ -2,68 +2,70 @@
 
 pipeline {
   agent any
-  environment {
-    WORK_DIR = 'App'
-    // ECR image
-    AWS_REGION = 'us-east-1'
-    AWS_CREDENTIALS_ID = 'aws-creds'
-    ACCOUNT_ID = '123456789012'
-    ECR_REPO = 'flask-app'
-    ECR_URI = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}"
-    IMAGE_TAG = "${BUILD_NUMBER}"
-    FULL_IMAGE = "${ECR_URI}:${IMAGE_TAG}"
 
-    // GitOps manifests
+  environment {
+    // App location
+    WORK_DIR = 'App'
+
+    // AWS/ECR
+    AWS_REGION = 'us-east-1'
+    AWS_CREDS  = 'aws-creds'          // Jenkins credentials ID (AWS Credentials)
+
+    ACCOUNT_ID = '637423620989'
+    ECR_REPO   = 'ivolve-app'
+    ECR_URI    = "$637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app"
+
+    IMAGE_TAG  = "${BUILD_NUMBER}"
+
+    // GitOps
     DEPLOYMENT_FILE = 'k8s/deployment.yaml'
-    CONTAINER_NAME = 'flask-app'
-    GIT_TOKEN_ID = 'github-token'
+    CONTAINER_NAME  = 'flask-app'
+    GIT_TOKEN_ID    = 'GitHub'  // Jenkins Secret text
   }
 
   stages {
 
     stage('Build Image') {
       steps {
-        dir("${WORK_DIR}") {
-          script { buildLib.call(env.FULL_IMAGE) }
-        }
+        dockerBuild(WORK_DIR, ECR_URI, IMAGE_TAG)
       }
     }
 
-    stage('Scan Image') {
+    stage('Security Scan') {
       steps {
-        script { scanLib.call(env.FULL_IMAGE) }
+        trivyImageScan(ECR_URI, IMAGE_TAG)
       }
     }
 
     stage('Push Image') {
       steps {
-        script { pushLib.call(env.FULL_IMAGE, env.AWS_REGION, env.AWS_CREDENTIALS_ID) }
+        // If you use IAM role on Jenkins EC2, call ecrPushImage without creds
+        ecrPushImage(ECR_URI, IMAGE_TAG, AWS_REGION, AWS_CREDS)
       }
     }
 
-    stage('Delete Image') {
+    stage('Cleanup Local Image') {
       steps {
-        script { deleteLib.call(env.FULL_IMAGE) }
+        removeImageLocally(ECR_URI, IMAGE_TAG)
       }
     }
 
-    stage('Update Manifests') {
+    stage('Update K8s Manifest (GitOps)') {
       steps {
-        script { updateLib.call(env.DEPLOYMENT_FILE, env.CONTAINER_NAME, env.FULL_IMAGE) }
-      }
-    }
-
-    stage('Push Manifests') {
-      steps {
-        script { pushMan.call(env.GIT_TOKEN_ID, "chore(gitops): update image to ${env.IMAGE_TAG} [skip ci]") }
+        updateAndPushManifest(
+          DEPLOYMENT_FILE,
+          CONTAINER_NAME,
+          "${ECR_URI}:${IMAGE_TAG}",
+          GIT_TOKEN_ID,
+          "chore(gitops): update image to ${IMAGE_TAG} [skip ci]"
+        )
       }
     }
   }
 
   post {
-    always {
-      echo 'Pipeline execution completed'
-      sh 'docker logout || true'
-    }
+    success { echo 'Pipeline completed successfully' }
+    failure { echo 'Pipeline failed' }
+    always  { sh 'docker logout || true' }
   }
 }
