@@ -15,7 +15,7 @@ pipeline {
 
     // GitOps
     DEPLOYMENT_FILE = 'k8s/deployment.yaml'
-    GIT_TOKEN_ID    = 'GitHub'     
+    GIT_TOKEN_ID    = 'github-token'     
     TARGET_BRANCH   = 'main'       
   }
 
