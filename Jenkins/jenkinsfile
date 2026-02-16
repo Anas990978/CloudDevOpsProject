@@ -14,7 +14,7 @@ pipeline {
     IMAGE_TAG  = "${BUILD_NUMBER}"
 
     // GitOps
-    DEPLOYMENT_FILE = 'k8s/deployment.yaml'
+    DEPLOYMENT_FILE = 'K8s/deployment.yaml'
     GIT_TOKEN_ID    = 'github-token'     
     TARGET_BRANCH   = 'main'       
   }
