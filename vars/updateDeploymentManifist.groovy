@@ -2,7 +2,7 @@ def call(String imageName, String imageTag, String deploymentFile, String gitTok
 
   withCredentials([string(credentialsId: gitTokenCredId, variable: 'GIT_TOKEN')]) {
     sh """
-      set -euo pipefail
+      set -eu
 
       echo "Updating manifest: ${deploymentFile}"
       echo "Setting image to: ${imageName}:${imageTag}"
