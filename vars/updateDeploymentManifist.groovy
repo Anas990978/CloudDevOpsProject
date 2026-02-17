@@ -3,7 +3,10 @@ def call(String imageName, String imageTag, String deploymentFile, String gitTok
   withCredentials([string(credentialsId: gitTokenCredId, variable: 'GIT_TOKEN')]) {
     sh """
       set -e
-      git pull origin main --rebase
+      
+      git fetch origin gitops
+      git checkout -B gitops origin/gitops
+
       # Update image in the deployment file (GitOps)
       sed -i -E "s#(^[[:space:]]*-?[[:space:]]*image:[[:space:]]*).*#\\1${imageName}:${imageTag}#g" ${deploymentFile}
 
