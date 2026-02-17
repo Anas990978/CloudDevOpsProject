@@ -6,7 +6,7 @@ metadata:
   name: ivolve-proj
   namespace: ivolve
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: ivolve-proj
@@ -17,7 +17,29 @@ spec:
         app: ivolve-proj
     spec:
       containers:
-      - image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/flask-app:1.0
-        name: flask-app
+      - image: 
+        name: 
+        resources: {}
+status: {}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ivolve-app
+  name: ivolve-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ivolve-app
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: ivolve-app
+    spec:
+      containers:
+      - image: 637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app:1
+        name: ivolve-app
         resources: {}
 status: {}
