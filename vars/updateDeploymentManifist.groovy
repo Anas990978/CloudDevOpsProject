@@ -3,7 +3,7 @@ def call(String imageName, String imageTag, String deploymentFile, String gitTok
   withCredentials([string(credentialsId: gitTokenCredId, variable: 'GIT_TOKEN')]) {
     sh """
       set -e
-      git pull origin Head:main
+      git pull origin main --rebase
       # Update image in the deployment file (GitOps)
       sed -i -E "s#(^[[:space:]]*-?[[:space:]]*image:[[:space:]]*).*#\\1${imageName}:${imageTag}#g" ${deploymentFile}
 
@@ -17,7 +17,8 @@ def call(String imageName, String imageTag, String deploymentFile, String gitTok
 
       # Push back to your repo using token
       git remote set-url origin https://x-access-token:\${GIT_TOKEN}@github.com/Anas990978/CloudDevOpsProject.git
-      git push origin HEAD:main
+      git push origin HEAD:gitops
+
     """
   }
 }

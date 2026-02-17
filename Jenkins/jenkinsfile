@@ -25,20 +25,7 @@ pipeline {
   }
 
   stages {
-    stage('Guard: skip GitOps commits') {
-      steps {
-        script {
-        def msg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
-        echo "Last commit message: ${msg}"
-        if (msg.contains("[skip ci]") || msg.contains("[ci skip]")) {
-        currentBuild.result = 'SUCCESS'
-        error("Skipping build triggered by GitOps commit.")
-          }
-        }
-      }
-    }
-
-
+    
     stage('Checkout SCM') {
       steps {
         checkout scm
