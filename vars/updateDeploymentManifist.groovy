@@ -17,7 +17,8 @@ def call(String imageName, String imageTag, String deploymentFile, String gitTok
 
       # Push back to your repo using token
       git remote set-url origin https://x-access-token:\${GIT_TOKEN}@github.com/Anas990978/CloudDevOpsProject.git
-      git push origin HEAD:gitops
+      git push origin HEAD:refs/heads/gitops
+
 
     """
   }
