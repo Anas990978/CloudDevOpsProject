@@ -3,10 +3,9 @@ def call(String imageName, String imageTag, String deploymentFile, String gitTok
   withCredentials([string(credentialsId: gitTokenCredId, variable: 'GIT_TOKEN')]) {
     sh """
       set -e
-
+      git pull origin Head:main
       # Update image in the deployment file (GitOps)
       sed -i -E "s#(^[[:space:]]*-?[[:space:]]*image:[[:space:]]*).*#\\1${imageName}:${imageTag}#g" ${deploymentFile}
-
 
       git config user.email "jenkins@local"
       git config user.name "jenkins"
