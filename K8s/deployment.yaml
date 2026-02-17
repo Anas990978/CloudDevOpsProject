@@ -17,7 +17,7 @@ spec:
         app: ivolve-proj
     spec:
       containers:
-      - image: 637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app:8
+      - image: 637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app:9
         name: ivolve-app
         resources: {}
 status: {}
