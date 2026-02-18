@@ -177,6 +177,7 @@ This README provides:
 3. Jenkins CI builds/scans/pushes the Docker image and updates K8s manifests.
 4. Kubernetes runs the application in the `iVolve` namespace.
 5. ArgoCD syncs and deploys changes from Git to the cluster.
+<img width="6805" height="3476" alt="ivolve-proj2" src="https://github.com/user-attachments/assets/a6385570-d7ab-4d39-bd1b-af8638db9e09" />
 
 ## Notes
 
