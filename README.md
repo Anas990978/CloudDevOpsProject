@@ -1,4 +1,4 @@
-<img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a6fcbef4-b2ae-447e-8428-34c026ad8dc2" /><img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a6fcbef4-b2ae-447e-8428-34c026ad8dc2" /># Flask App Deployment on AWS EKS with CI/CD, GitOps, and Infrastructure as Code
+# Flask App Deployment on AWS EKS with CI/CD, GitOps, and Infrastructure as Code
 
 ## Project Overview
 
@@ -19,8 +19,6 @@ The system is automated and reproducible using:
 ## High-Level Architecture
 
 <img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a35d126c-2e28-46c1-adb1-138ad3c15d88" />
-<img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a35d126c-2e28-46c1-adb1-138ad3c15d88" />
-
 
 ## Technologies Used
 
@@ -112,6 +110,10 @@ cd ../infra
 terraform init
 terraform apply -auto-approve
 ```
+<img width="1245" height="787" alt="image" src="https://github.com/user-attachments/assets/4e9eff46-c51a-489c-bb46-bd4e1b24632f" />
+<img width="1545" height="685" alt="image" src="https://github.com/user-attachments/assets/1fd84cfc-43b2-4cfc-8172-c4378d04b740" />
+<img width="1543" height="682" alt="image" src="https://github.com/user-attachments/assets/47b73c1d-6202-422c-b626-4e903ffd06e9" />
+<img width="1549" height="597" alt="image" src="https://github.com/user-attachments/assets/fc99d097-3398-44d3-aaf5-2960a06c9305" />
 
 Update kubeconfig:
 
