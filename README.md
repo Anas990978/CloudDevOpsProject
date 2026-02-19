@@ -34,50 +34,19 @@ The system is automated and reproducible using:
 | Security | Trivy |
 | Cloud Provider | AWS |
 
----
+## Table of Contents
 
-## Project Structure
-
-.
-├── App/
-│   ├── FinalProject/
-│   │   ├── app.py
-│   │   ├── requirements.txt
-│   │   └── templates/
-│   └── Dockerfile
-│
-├── K8s/
-│   ├── ns.yaml
-│   ├── deployment.yaml
-│   └── service.yaml
-│
-├── Jenkins/
-│   └── jenkinsfile
-│
-├── Ansible/
-│   ├── roles/
-│   │   ├── common-tools/
-│   │   ├── docker/
-│   │   ├── jenkins/
-│   │   └── trivy/
-│   └── playbook.yaml
-│
-├── Terraform/
-│   ├── modules/
-│   │   ├── network/
-│   │   ├── jenkins/
-│   │   ├── eks/
-│   │   └── ecr/
-│   ├── Backend/
-│   └── infra/
-│
-└── README.md
-
----
-
+1. Repository Setup
+2. Containerization with Docker 
+3. Infrastructure as Code with Terraform
+5. Configuration Management with Ansible
+6. Continuous Integration with Jenkins
+7. Continuous Deployment with ArgoCD
+8. Verification Steps
+9. Repository Structure
 ## Docker (Build and Run)
 
-Build locally:
+Build locally :
 
 ```bash
 cd App
@@ -137,7 +106,9 @@ cd Ansible
 ansible-galaxy collection install amazon.aws
 ansible-playbook -i inventory.aws_ec2.yml playbook.yaml
 ```
-
+<img width="1373" height="620" alt="image" src="https://github.com/user-attachments/assets/5a7f4b8b-47c6-4e2f-ab12-b12794efe3b4" />
+<img width="1365" height="630" alt="image" src="https://github.com/user-attachments/assets/be2ac97f-bbe4-4f14-bcd0-466240896cf1" />
+<img width="1368" height="280" alt="image" src="https://github.com/user-attachments/assets/8b77fbbf-0ff5-46d7-98a4-a7415f110bd1" />
 
 ## CI Pipeline (Jenkins)
 
@@ -154,6 +125,7 @@ Pipeline stages:
 - Push Image
 - Cleanup
 - Update K8s Manifest (GitOps)
+<img width="1537" height="728" alt="image" src="https://github.com/user-attachments/assets/f0178949-7dcf-42a7-90cc-11b3b2c8a6ce" />
 
 Jenkins configuration:
 - Shared library name: `shared-lib`
@@ -161,7 +133,10 @@ Jenkins configuration:
 - GitHub token ID: `github-token`
 - ECR URI: `637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app`
 - Image tag: `${BUILD_NUMBER}`
-
+- WebHook : `http://54.225.32.247:8080/github-web` to trigger the pipeline whenever the code repo changes  
+<img width="1543" height="725" alt="image" src="https://github.com/user-attachments/assets/b78fbfb9-8f2f-41e5-82df-e3e4c8d03a8b" />
+<img width="1564" height="733" alt="image" src="https://github.com/user-attachments/assets/aa985930-a351-4f67-abc0-50ccca4a0f80" />
+<img width="1538" height="715" alt="image" src="https://github.com/user-attachments/assets/09d96d2c-0005-48e9-ab03-f0c34083fa37" />
 ---
 
 ## Security Scanning (Trivy)
@@ -183,23 +158,13 @@ Images are stored in:
 ```
 637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app:<tag>
 ```
-
+<img width="1543" height="682" alt="image" src="https://github.com/user-attachments/assets/d5729b04-2d23-450f-8810-c061d93fd64c" />
+ 
 Login command:
 
-<<<<<<< HEAD
-1. Terraform provisions AWS infra: VPC, subnets, IGW/NACL, EC2 Jenkins, EKS, ECR, CloudWatch.
-2. Ansible configures EC2 instances (tools, Docker, Jenkins, Trivy).
-3. Jenkins CI builds/scans/pushes the Docker image and updates K8s manifests.
-4. Kubernetes runs the application in the `iVolve` namespace.
-5. ArgoCD syncs and deploys changes from Git to the cluster.
-<img width="6805" height="3476" alt="ivolve-proj2" src="https://github.com/user-attachments/assets/a6385570-d7ab-4d39-bd1b-af8638db9e09" />
-=======
 ```bash
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 637423620989.dkr.ecr.us-east-1.amazonaws.com
 ```
->>>>>>> 77b0d2d (Documentation)
-
----
 
 ## Kubernetes (Amazon EKS)
 
