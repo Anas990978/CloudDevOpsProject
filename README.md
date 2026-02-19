@@ -34,17 +34,6 @@ The system is automated and reproducible using:
 | Security | Trivy |
 | Cloud Provider | AWS |
 
-## Table of Contents
-
-1. Repository Setup
-2. Containerization with Docker 
-3. Infrastructure as Code with Terraform
-5. Configuration Management with Ansible
-6. Continuous Integration with Jenkins
-7. Continuous Deployment with ArgoCD
-8. Verification Steps
-9. Repository Structure
-## Docker (Build and Run)
 
 Build locally :
 
