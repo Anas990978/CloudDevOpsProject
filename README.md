@@ -1,188 +1,269 @@
-# CloudDevOpsProject
+<img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a6fcbef4-b2ae-447e-8428-34c026ad8dc2" /><img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a6fcbef4-b2ae-447e-8428-34c026ad8dc2" /># Flask App Deployment on AWS EKS with CI/CD, GitOps, and Infrastructure as Code
 
-End-to-end DevOps pipeline for a containerized app: Docker build, Kubernetes manifests, Terraform AWS infra, Ansible configuration, Jenkins CI, and ArgoCD CD.
+## Project Overview
 
-## Repository Setup (GitHub)
+This project demonstrates an end-to-end DevOps workflow for deploying a containerized Flask application to Amazon EKS using modern DevOps practices.
 
-1. Create a new GitHub repository named `CloudDevOpsProject` and initialize it with a README.
-2. Add the remote and push this project:
+The system is automated and reproducible using:
+- Infrastructure as Code (Terraform)
+- Configuration Management (Ansible)
+- Continuous Integration (Jenkins)
+- Containerization (Docker)
+- Container Registry (Amazon ECR)
+- Kubernetes Orchestration (Amazon EKS)
+- GitOps Deployment (ArgoCD)
+- Security Scanning (Trivy)
 
-```bash
-git init
-git remote add origin https://github.com/Anas990978/CloudDevOpsProject.git
-git add .
-git commit -m "Initial commit"
-git push -u origin main
-```
+---
 
-Deliverable: repository URL (replace with your actual URL).
+## High-Level Architecture
 
-## Application Source
+<img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a35d126c-2e28-46c1-adb1-138ad3c15d88" />
+<img width="3629" height="1854" alt="ivolve-proj3" src="https://github.com/user-attachments/assets/a35d126c-2e28-46c1-adb1-138ad3c15d88" />
 
-The application source is from:
 
-- https://github.com/IbrahimAdel15/FinalProject.git
+## Technologies Used
 
-This repo already includes the app under `App/FinalProject/` with a Dockerfile at `App/Dockerfile`.
+| Category | Tools |
+|----------|--------|
+| Infrastructure | Terraform |
+| Configuration | Ansible |
+| CI/CD | Jenkins |
+| Containerization | Docker |
+| Registry | Amazon ECR |
+| Orchestration | Amazon EKS |
+| GitOps | ArgoCD |
+| Security | Trivy |
+| Cloud Provider | AWS |
 
-## 1. Containerization with Docker
+---
 
-**Files**
-- `App/Dockerfile`
-- `App/FinalProject/`
+## Project Structure
 
-**Build and run locally**
+.
+├── App/
+│   ├── FinalProject/
+│   │   ├── app.py
+│   │   ├── requirements.txt
+│   │   └── templates/
+│   └── Dockerfile
+│
+├── K8s/
+│   ├── ns.yaml
+│   ├── deployment.yaml
+│   └── service.yaml
+│
+├── Jenkins/
+│   └── jenkinsfile
+│
+├── Ansible/
+│   ├── roles/
+│   │   ├── common-tools/
+│   │   ├── docker/
+│   │   ├── jenkins/
+│   │   └── trivy/
+│   └── playbook.yaml
+│
+├── Terraform/
+│   ├── modules/
+│   │   ├── network/
+│   │   ├── jenkins/
+│   │   ├── eks/
+│   │   └── ecr/
+│   ├── Backend/
+│   └── infra/
+│
+└── README.md
+
+---
+
+## Docker (Build and Run)
+
+Build locally:
 
 ```bash
 cd App
-# Build image
 docker build -t finalproject:latest .
 ```
 
-**Commands used**
+## Infrastructure Provisioning (Terraform)
 
-```bash
-cd App
-docker build -t finalproj-app .
-docker run -d --name final-proj-cont -p 5001:5000 finalproj-app:latest
-docker rm final-proj-cont
-docker rmi finalproj-app:latest
-```
+Terraform provisions:
+- VPC & networking
+- Security groups
+- Jenkins EC2
+- EKS cluster
+- Node group
+- ECR repository
+- S3 backend for state
 
-
-Deliverable: Dockerfile committed.
-
-## 2. Kubernetes Orchestration
-
-**Files**
-- `K8s/ns.yaml` (namespace)
-- `K8s/deployment.yaml` (deployment)
-- `K8s/service.yaml` (service)
-
-**Apply manifests**
-
-```bash
-kubectl apply -f K8s/ns.yaml
-```
-
-**Commands used**
-
-```bash
-kubectl create deployment ivolve-proj \
-  --image=637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app:${BUILD_NUMBER} \
-  -n ivolve \
-  --dry-run=client -o yaml > K8s/deployment.yaml
-kubectl expose deployment ivolve-proj \
-  --type=LoadBalancer \
-  --port=80 \
-  --target-port=5000 \
-  -n ivolve \
-  --dry-run=client -o yaml > K8s/service.yaml
-```
-
-Deliverable: required YAML committed.
-
-## 3. Infrastructure Provisioning with Terraform (AWS)
-
-**Structure**
-- `Terraform/modules/network` (VPC, subnets, IGW, NACL)
-- `Terraform/modules/jenkins` (EC2 Jenkins + SG)
-- `Terraform/modules/eks` (EKS cluster)
-- `Terraform/modules/ecr` (ECR registry)
-- `Terraform/Backend` (S3 backend)
-- `Terraform/infra` (root module)
-
-
-**Commands used**
+Initialize backend:
 
 ```bash
 cd Terraform/Backend
 terraform init
 terraform apply -auto-approve
+```
+
+Apply infrastructure:
+
+```bash
 cd ../infra
 terraform init
 terraform apply -auto-approve
+```
+
+Update kubeconfig:
+
+```bash
 aws eks update-kubeconfig --region us-east-1 --name ivolve-proj-eks
 ```
 
-Deliverables: Terraform scripts committed (VPC, subnets, IGW, NACL, EC2 Jenkins, S3 backend, CloudWatch, modules).
+## Configuration Management (Ansible)
 
-## 4. Configuration Management with Ansible
+Ansible configures the Jenkins EC2 instance with:
+- Java
+- Jenkins
+- Docker
+- AWS CLI
+- Trivy
 
-**Files**
-- `Ansible/playbook.yaml`
-- `Ansible/inventory.aws_ec2.yml` (dynamic inventory)
-- `Ansible/roles/common-tools`
-- `Ansible/roles/docker`
-- `Ansible/roles/jenkins`
-- `Ansible/roles/trivy`
-
-**Commands used**
+Run Ansible:
 
 ```bash
+cd Ansible
 ansible-galaxy collection install amazon.aws
-ansible-inventory -i inventory.aws_ec2.yml --graph
 ansible-playbook -i inventory.aws_ec2.yml playbook.yaml
 ```
 
-Deliverable: playbooks, roles, dynamic inventory committed.
 
-## 5. Continuous Integration with Jenkins
+## CI Pipeline (Jenkins)
 
-**Files**
-- `Jenkins/jenkinsfile`
-- `vars/` (shared library: build, scan, push, remove, update manifests)
+The Jenkins pipeline performs:
+- Build Docker image
+- Security scan using Trivy
+- Push image to Amazon ECR
+- Update Kubernetes deployment manifest (GitOps)
+- Commit and push changes
 
-**Pipeline stages**
+Pipeline stages:
 - Build Image
-- Scan Image
+- Security Scan
 - Push Image
-- Delete Image Locally
-- Update Manifests
-- Push Manifests
+- Cleanup
+- Update K8s Manifest (GitOps)
 
-Deliverable: Jenkinsfile and shared library committed.
+Jenkins configuration:
+- Shared library name: `shared-lib`
+- AWS credentials ID: `aws-creds`
+- GitHub token ID: `github-token`
+- ECR URI: `637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app`
+- Image tag: `${BUILD_NUMBER}`
 
-## 6. Continuous Deployment with ArgoCD
+---
 
-**Files**
-- `ArgoCd/argo-cd-ns.yaml`
+## Security Scanning (Trivy)
 
-**Commands used**
+Images are scanned for HIGH and CRITICAL vulnerabilities before pushing to ECR.
+
+Example:
 
 ```bash
-kubectl create ns argocd -o yaml > ArgoCd/argo-cd-ns.yaml
-kubectl apply -f ArgoCd/argo-cd-ns.yaml
-kubectl apply -n argocd \
-  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-kubectl -n argocd patch svc argocd-server -p '{"spec": {"type": "LoadBalancer"}}'
-kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath="{.data.password}" | base64 -d; echo
+trivy image --severity HIGH,CRITICAL image:tag
 ```
 
-Create an ArgoCD Application pointing to this repo and the `K8s/` path. Commit the Application manifest when ready.
+---
 
-Deliverable: ArgoCD Application manifest committed.
+## Amazon ECR
 
-## 7. Documentation
+Images are stored in:
 
-This README provides:
-- Setup instructions
-- Architecture overview
+```
+637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app:<tag>
+```
 
-## Architecture Overview
+Login command:
 
+<<<<<<< HEAD
 1. Terraform provisions AWS infra: VPC, subnets, IGW/NACL, EC2 Jenkins, EKS, ECR, CloudWatch.
 2. Ansible configures EC2 instances (tools, Docker, Jenkins, Trivy).
 3. Jenkins CI builds/scans/pushes the Docker image and updates K8s manifests.
 4. Kubernetes runs the application in the `iVolve` namespace.
 5. ArgoCD syncs and deploys changes from Git to the cluster.
 <img width="6805" height="3476" alt="ivolve-proj2" src="https://github.com/user-attachments/assets/a6385570-d7ab-4d39-bd1b-af8638db9e09" />
+=======
+```bash
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 637423620989.dkr.ecr.us-east-1.amazonaws.com
+```
+>>>>>>> 77b0d2d (Documentation)
 
-## Notes
+---
 
-- Jenkins builds and pushes images to `637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app` with tag `${BUILD_NUMBER}`.
-- Ensure AWS credentials are configured for Terraform and Ansible (if using AWS dynamic inventory).
+## Kubernetes (Amazon EKS)
+
+Kubernetes resources include:
+- Namespace
+- Deployment
+- LoadBalancer service
+
+Apply manifests:
+
+```bash
+kubectl apply -f K8s/ns.yaml
+```
+
+Verification:
+
+```bash
+kubectl get pods -n ivolve
+kubectl get svc -n ivolve
+```
+
+---
+
+## GitOps with ArgoCD
+
+ArgoCD continuously monitors:
+- `K8s/deployment.yaml`
+
+When Jenkins updates the image tag:
+- ArgoCD detects changes
+- Syncs automatically
+- Deploys new version to EKS
+
+Benefits:
+- Automatic deployments
+- Git-based version control
+- Easy rollback
+- Declarative Kubernetes management
+
+---
+
+## End-to-End CI/CD Flow
+
+1. Developer pushes code to GitHub
+2. Jenkins triggered via webhook
+3. Image built and scanned
+4. Image pushed to ECR
+5. Manifest updated
+6. ArgoCD detects change
+7. EKS updates running pods automatically
+
+---
+
+## DevOps Concepts Demonstrated
+
+- Infrastructure as Code (IaC)
+- Configuration as Code
+- CI/CD automation
+- GitOps workflow
+- Container security
+- Kubernetes deployment
+- AWS cloud architecture
+
+---
 
 ## Author
-**Anas Tarek**
+
+Anas Tarek
+Cloud and DevOps Engineer
