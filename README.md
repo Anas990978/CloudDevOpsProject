@@ -80,8 +80,6 @@ terraform init
 terraform apply -auto-approve
 ```
 <img width="1245" height="787" alt="image" src="https://github.com/user-attachments/assets/4e9eff46-c51a-489c-bb46-bd4e1b24632f" />
-<img width="1545" height="685" alt="image" src="https://github.com/user-attachments/assets/1fd84cfc-43b2-4cfc-8172-c4378d04b740" />
-<img width="1543" height="682" alt="image" src="https://github.com/user-attachments/assets/47b73c1d-6202-422c-b626-4e903ffd06e9" />
 <img width="1549" height="597" alt="image" src="https://github.com/user-attachments/assets/fc99d097-3398-44d3-aaf5-2960a06c9305" />
 
 Update kubeconfig:
@@ -106,6 +104,7 @@ cd Ansible
 ansible-galaxy collection install amazon.aws
 ansible-playbook -i inventory.aws_ec2.yml playbook.yaml
 ```
+<img width="773" height="131" alt="image" src="https://github.com/user-attachments/assets/4d08b6ef-d6c4-4198-8839-07e209cfc456" />
 <img width="1373" height="620" alt="image" src="https://github.com/user-attachments/assets/5a7f4b8b-47c6-4e2f-ab12-b12794efe3b4" />
 <img width="1365" height="630" alt="image" src="https://github.com/user-attachments/assets/be2ac97f-bbe4-4f14-bcd0-466240896cf1" />
 <img width="1368" height="280" alt="image" src="https://github.com/user-attachments/assets/8b77fbbf-0ff5-46d7-98a4-a7415f110bd1" />
@@ -133,7 +132,7 @@ Jenkins configuration:
 - GitHub token ID: `github-token`
 - ECR URI: `637423620989.dkr.ecr.us-east-1.amazonaws.com/ivolve-app`
 - Image tag: `${BUILD_NUMBER}`
-- WebHook : `http://54.225.32.247:8080/github-web` to trigger the pipeline whenever the code repo changes  
+- WebHook : `http://54.225.32.247:8080/github-web` to trigger the pipeline whenever the code repo changes
 <img width="1543" height="725" alt="image" src="https://github.com/user-attachments/assets/b78fbfb9-8f2f-41e5-82df-e3e4c8d03a8b" />
 <img width="1564" height="733" alt="image" src="https://github.com/user-attachments/assets/aa985930-a351-4f67-abc0-50ccca4a0f80" />
 <img width="1538" height="715" alt="image" src="https://github.com/user-attachments/assets/09d96d2c-0005-48e9-ab03-f0c34083fa37" />
@@ -185,6 +184,9 @@ Verification:
 kubectl get pods -n ivolve
 kubectl get svc -n ivolve
 ```
+<img width="1545" height="685" alt="image" src="https://github.com/user-attachments/assets/1fd84cfc-43b2-4cfc-8172-c4378d04b740" />
+<img width="1312" height="259" alt="image" src="https://github.com/user-attachments/assets/a6430ca5-d051-4b4d-8758-9ba6cfbd8ed4" />
+<img width="1108" height="111" alt="image" src="https://github.com/user-attachments/assets/ddb92807-f70f-49d0-b028-37cec2dae954" />
 
 ---
 
@@ -204,7 +206,7 @@ Benefits:
 - Easy rollback
 - Declarative Kubernetes management
 
----
+<img width="1543" height="727" alt="image" src="https://github.com/user-attachments/assets/20606216-4190-4662-9847-b282d5de366f" />
 
 ## End-to-End CI/CD Flow
 
